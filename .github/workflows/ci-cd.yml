@@ -63,9 +63,32 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /opt/gold-price-api || exit 1
+            # Create directory if not exists
+            sudo mkdir -p /opt/gold-price-api
+            sudo chown $USER:$USER /opt/gold-price-api
+            cd /opt/gold-price-api
+
+            # Create docker-compose.yml if not exists
+            if [ ! -f docker-compose.yml ]; then
+              cat > docker-compose.yml << 'EOF'
+            version: '3.8'
+            services:
+              app:
+                image: ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+                container_name: gold-price-api
+                ports:
+                  - "3000:3000"
+                restart: unless-stopped
+                environment:
+                  - NODE_ENV=production
+            EOF
+            fi
+
+            # Login and pull latest image
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ github.actor }} --password-stdin
             docker pull ${{ env.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+
+            # Deploy
             docker-compose down
             docker-compose up -d
             docker-compose ps
