@@ -1,5 +1,5 @@
 # Use official Node.js LTS image based on Ubuntu
-FROM node:18-bullseye-slim
+FROM node:20-bullseye-slim
 
 # Set working directory
 WORKDIR /app
