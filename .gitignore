@@ -43,3 +43,7 @@ coverage/
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Docker
+docker-compose.override.yml
+.docker/
