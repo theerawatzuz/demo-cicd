@@ -25,8 +25,8 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      - gold-api-network
+      - bridge
 
 networks:
-  gold-api-network:
-    driver: bridge
+  bridge:
+    external: true
